@@ -3,149 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars 2D Fixed</title>
+    <title>Brawl Stars: Повний Бойовий Симулятор</title>
     <style>
         body {
-            margin: 0; padding: 0; background: #130f40;
-            font-family: sans-serif; display: flex; flex-direction: column;
+            margin: 0; padding: 0; background: #0b0e26;
+            font-family: 'Impact', 'Arial Black', sans-serif; display: flex; flex-direction: column;
             align-items: center; justify-content: center; min-height: 100vh;
             color: #fff; user-select: none;
         }
-        h1 { color: #f1c40f; margin: 10px 0; text-shadow: 2px 2px #000; }
-        #score-board { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-        #arena {
-            position: relative; width: 600px; height: 400px;
-            background: #27ae60; border: 8px solid #2c3e50; border-radius: 10px;
-        }
-        .bush { position: absolute; background: #1e824c; border-radius: 5px; }
-        .char {
-            position: absolute; width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 24px;
-        }
-        #shelly { background: #9b59b6; border: 2px solid #fff; z-index: 10; }
-        #elprimo { background: #e74c3c; border: 2px solid #f1c40f; z-index: 5; }
-        #gem {
-            position: absolute; width: 20px; height: 20px;
-            background: #00d2d3; transform: rotate(45deg); box-shadow: 0 0 10px #00d2d3;
-        }
-        #game-over {
-            display: none; position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            flex-direction: column; align-items: center; justify-content: center; z-index: 100;
-        }
-        .btn {
-            background: #f1c40f; color: #000; border: none;
-            padding: 10px 20px; font-size: 18px; font-weight: bold;
-            border-radius: 20px; cursor: pointer; margin-top: 15px;
-        }
+
+        .screen { display: none; width: 750px; height: 480px; border-radius: 12px; border: 5px solid #f1c40f; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        .active { display: block; }
+
+        /* МЕНЮ */
+        #menu-screen { background: linear-gradient(180deg, #101642, #1b277a); text-align: center; }
+        .top-bar { display: flex; justify-content: space-between; padding: 12px 20px; background: rgba(0,0,0,0.6); font-size: 20px; border-bottom: 3px solid #f1c40f; }
+        .stat { display: flex; align-items: center; gap: 8px; font-weight: bold; text-shadow: 2px 2px #000; }
+        .game-title { font-size: 55px; color: #fff; text-shadow: 5px 5px 0 #000; margin-top: 25px; }
+        .brawler-showcase { font-size: 95px; margin: 15px 0; animation: float 1.5s infinite alternate; }
+        @keyframes float { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        .btn-play { background: #ff4757; color: #fff; border: 4px solid #fff; padding: 12px 60px; font-size: 32px; border-radius: 40px; cursor: pointer; text-shadow: 3px 3px #000; box-shadow: 0 6px 0 #bc1424; font-family: inherit; }
+        .btn-starr { background: #3498db; font-size: 20px; padding: 10px 30px; border-radius: 25px; border: 3px solid #fff; margin-top: 20px; cursor: pointer; display: inline-block; }
+
+        /* ДОРОГА СТАРР */
+        #starr-screen { background: #070919; padding: 15px; box-sizing: border-box; }
+        .starr-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #3498db; padding-bottom: 5px; }
+        .road-scroll { display: flex; gap: 15px; margin-top: 20px; overflow-x: auto; padding: 15px 5px; height: 260px; align-items: center; }
+        .card { background: #151a3a; border: 4px solid #4b5563; border-radius: 15px; width: 140px; padding: 12px 8px; text-align: center; flex-shrink: 0; }
+        .card.selected { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        .rarity-tag { font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 2px 5px; border-radius: 5px; display: inline-block; background: rgba(0,0,0,0.4); }
+        .btn-claim { background: #2ecc71; border: 2px solid #fff; color: #fff; padding: 5px 12px; border-radius: 12px; font-size: 14px; cursor: pointer; margin-top: 8px; }
+
+        /* СИНЯ АРЕНА БОЮ */
+        #arena-screen { background: #1a2557; cursor: crosshair; }
+        .map-bush { position: absolute; background: #27ae60; border-radius: 10px; opacity: 0.85; }
+        .player-char { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 6px 12px rgba(0,0,0,0.5); z-index: 10; border: 3px solid #fff; background: #2980b9; }
+        .bot-char { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 6px 12px rgba(0,0,0,0.5); z-index: 9; border: 3px solid #e74c3c; background: #c0392b; }
+        
+        /* Снаряди та ефекти */
+        .bullet { position: absolute; width: 10px; height: 10px; background: #f1c40f; border-radius: 50%; box-shadow: 0 0 8px #f1c40f; z-index: 15; }
+        .super-bullet { position: absolute; width: 20px; height: 20px; background: #9b59b6; border-radius: 50%; box-shadow: 0 0 15px #9b59b6; z-index: 15; }
+        #arena-gem { position: absolute; width: 20px; height: 20px; background: #00d2d3; border-radius: 4px; transform: rotate(45deg); box-shadow: 0 0 15px #00d2d3; }
+
+        /* ІНТЕРФЕЙС БОЮ (ІНДІКАТОРИ ТА КНОПКИ) */
+        .battle-hud { position: absolute; bottom: 15px; left: 15px; display: flex; gap: 15px; z-index: 30; }
+        .hud-bar { width: 110px; height: 25px; background: #222; border: 2px solid #fff; border-radius: 5px; overflow: hidden; position: relative; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .hud-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; transition: width 0.1s ease; }
+        
+        #hp-fill { background: #2ecc71; width: 100%; }
+        #super-fill { background: #f1c40f; }
+        #hyper-fill { background: #9b59b6; }
+        .hud-text { z-index: 32; text-shadow: 1px 1px #000; }
+
+        .gadget-indicator { background: #27ae60; border: 2px solid #fff; padding: 2px 10px; border-radius: 5px; font-size: 14px; }
+
+        /* ЕФЕКТИ НА ГРАВЦЕВІ */
+        .gadget-active { box-shadow: 0 0 25px #2ecc71 !important; border-color: #2ecc71 !important; }
+        .hyper-active { box-shadow: 0 0 30px #ff00ff !important; border-color: #ff00ff !important; animation: hyper-glow 0.5s infinite alternate; }
+        @keyframes hyper-glow { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* ЕКРАН РЕЗУЛЬТАТІВ */
+        #result-screen { background: #060814; text-align: center; padding-top: 60px; box-sizing: border-box; }
+        .reward-grid { display: flex; justify-content: center; gap: 40px; margin: 40px 0; font-size: 28px; }
     </style>
 </head>
 <body>
 
-    <h1>BRAWL STARS 2D 🌟</h1>
-    <div id="score-board">💎 Кристали: <span id="gems-count">0</span></div>
+    <!-- 1. ГОЛОВНЕ МЕНЮ -->
+    <div id="menu-screen" class="screen active">
+        <div class="top-bar">
+            <div class="stat">🏆 КУБКИ: <span id="m-trophies">0</span></div>
+            <div class="stat">✉️ КРЕДИТИ: <span id="m-credits">0</span></div>
+        </div>
+        <div class="game-title">BRAWL STARS</div>
+        <div id="m-brawler-emoji" class="brawler-showcase">🤠</div>
+        <div id="m-brawler-name" style="font-size: 24px; color: #f1c40f; text-shadow: 2px 2px #000; margin-bottom: 20px;">Shelly</div>
+        
+        <button class="btn-play" onclick="startBrawlMatch()">У БІЙ! ⚔️</button><br>
+        <button class="btn-starr" onclick="openStarrPage()">Дорога Старр 🚀</button>
+    </div>
 
-    <div id="arena">
-        <!-- Кущі -->
-        <div class="bush" style="width: 100px; height: 50px; top: 50px; left: 50px;"></div>
-        <div class="bush" style="width: 100px; height: 50px; bottom: 50px; right: 50px;"></div>
-
-        <!-- Об'єкти -->
-        <div id="shelly" class="char">🤠</div>
-        <div id="elprimo" class="char">🤼‍♂️</div>
-        <div id="gem"></div>
-
-        <!-- Меню програшу -->
-        <div id="game-over">
-            <h2 style="color: #e74c3c; margin: 0;">НОКАУТ! 💀</h2>
-            <button class="btn" onclick="restartGame()">У бій! ⚔️</button>
+    <!-- 2. ДОРОГА СТАРР -->
+    <div id="starr-screen" class="screen">
+        <div class="starr-header">
+            <h2 style="margin: 0; color: #3498db;">ДОРОГА СТАРР 🚀</h2>
+            <div style="font-size: 22px;">✉️ Кредити: <span id="s-credits">0</span></div>
+        </div>
+        <div class="road-scroll" id="brawler-list"></div>
+        <div style="text-align: center; margin-top: auto; margin-bottom: 10px;">
+            <button class="btn-play" style="font-size: 20px; padding: 8px 30px;" onclick="closeStarrPage()">В Меню ↩️</button>
         </div>
     </div>
 
-    <p style="color: #aaa; font-size: 14px;">Керування: Стрілочки або клавіші W, A, S, D (англійська розкладка)</p>
+    <!-- 3. АРЕНА БОЮ -->
+    <div id="arena-screen" class="screen">
+        <div style="position: absolute; top: 15px; left: 15px; font-size: 18px; background: rgba(0,0,0,0.6); padding: 5px 15px; border-radius: 8px; z-index: 20; border: 2px solid #00d2d3;">
+            💎 Кристали: <span id="p-gems">0</span> | HP ХАНТЕР: <span id="bot-hp">4000</span>
+        </div>
+
+        <div class="map-bush" style="width: 120px; height: 70px; top: 60px; left: 120px;"></div>
+        <div class="map-bush" style="width: 120px; height: 70px; bottom: 60px; right: 120px;"></div>
+
+        <div id="player" class="player-char">🤠</div>
+        <div id="enemy" class="bot-char">🤖</div>
+        <div id="arena-gem"></div>
+
+        <!-- ІНДІКАТОРИ (HUD) -->
+        <div class="battle-hud">
+            <div class="hud-bar"><div id="hp-fill" class="hud-fill"></div><span class="hud-text">HP: <span id="hud-hp-val">4000</span></span></div>
+            <div class="hud-bar"><div id="super-fill" class="hud-fill"></div><span class="hud-text">СУПЕР [Q / ПКМ]</span></div>
+            <div class="hud-bar"><div id="hyper-fill" class="hud-fill"></div><span class="hud-text">ГІПЕР [F]</span></div>
+            <div class="gadget-indicator">🟢 Гаджети [E]: <span id="hud-gadget-val">3</span></div>
+        </div>
+    </div>
+
+    <!-- 4. ЕКРАН РЕЗУЛЬТАТІВ -->
+    <div id="result-screen" class="screen">
+        <h1 id="res-status" style="font-size: 50px; text-shadow: 3px 3px #000;">ПЕРЕМОГА! 🎉</h1>
+        <div class="reward-grid">
+            <div style="color: #f1c40f;">🏆 +<span id="res-trophies">0</span></div>
+            <div style="color: #3498db;">✉️ +<span id="res-credits">0</span> Кредитів</div>
+        </div>
+        <button class="btn-play" style="font-size: 22px; padding: 10px 40px;" onclick="exitToMenu()">Продовжити</button>
+    </div>
 
     <script>
-        const shelly = document.getElementById('shelly');
-        const elprimo = document.getElementById('elprimo');
-        const gem = document.getElementById('gem');
-        const gameOver = document.getElementById('game-over');
-        const scoreText = document.getElementById('gems-count');
+        let save = { trophies: 0, credits: 200, current: 'Shelly' };
 
-        let sX = 100, sY = 180;
-        let eX = 450, eY = 180;
-        let gX = 280, gY = 180;
-        let score = 0;
-        let isDead = false;
-
-        const keys = {};
-
-        function updatePositions() {
-            shelly.style.left = sX + 'px';
-            shelly.style.top = sY + 'px';
-            elprimo.style.left = eX + 'px';
-            elprimo.style.top = eY + 'px';
-            gem.style.left = gX + 'px';
-            gem.style.top = gY + 'px';
-        }
-
-        // Прив'язуємо керування до вікна
-        window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
-        window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
-
-        function loop() {
-            if (isDead) return;
-
-            // Рух Шеллі
-            if (keys['w'] || keys['arrowup']) sY -= 5;
-            if (keys['s'] || keys['arrowdown']) sY += 5;
-            if (keys['a'] || keys['arrowleft']) sX -= 5;
-            if (keys['d'] || keys['arrowright']) sX += 5;
-
-            // Межі карти
-            sX = Math.max(0, Math.min(560, sX));
-            sY = Math.max(0, Math.min(360, sY));
-
-            // Рух Ель Прімо за Шеллі
-            let dx = sX - eX;
-            let dy = sY - eY;
-            let dist = Math.hypot(dx, dy);
-            if (dist > 5) {
-                eX += (dx / dist) * 2;
-                eY += (dy / dist) * 2;
-            }
-
-            // Перевірка на кристал
-            if (Math.hypot(sX - gX, sY - gY) < 30) {
-                score++;
-                scoreText.innerText = score;
-                gX = Math.random() * 500 + 30;
-                gY = Math.random() * 300 + 30;
-            }
-
-            // Зіткнення з ворогом
-            if (Math.hypot(sX - eX, sY - eY) < 30) {
-                isDead = true;
-                gameOver.style.display = 'flex';
-            }
-
-            updatePositions();
-            requestAnimationFrame(loop);
-        }
-
-        function restartGame() {
-            sX = 100; sY = 180;
-            eX = 450; eY = 180;
-            score = 0;
-            scoreText.innerText = score;
-            isDead = false;
-            gameOver.style.display = 'none';
-            updatePositions();
-            loop();
-        }
-
-        updatePositions();
-        loop();
-    </script>
-</body>
-</html>
+        let brawlerData = [
+            { id: 'shelly', name: 'Shelly', emoji: '🤠', rarity: 'початковий', cost: 0, unlocked: true },
+            { id: 'elprimo', name: 'El Primo', emoji: '🤼‍♂️', rarity: 'rare', cost: 360, unlocked: false },
+            { id: 'poco', name: 'Poco', emoji: '💀', rarity: 'rare', cost: 360, unlocked: false },
+            { id: 'edgar', name: 'Edgar', emoji: '🧣', rarity: 'epic', cost: 925, unlocked: false },
+            { id: 'piper', name: 'Piper', emoji: '☂️', rarity: 'epic', cost: 925, unlocked: false },
+            { id: 'mortis', name: 'Mortis', emoji: '🎩', rarity: 'mythic', cost: 1900, unlocked: false },
+            { id: 'tara', name: 'Tara', emoji: '🃏', rarity: 'mythic', cost: 1900, unlocked: false },
+            { id: 'leon', name: 'Leon', emoji: '🦎', rarity: 'legendary', cost: 3800, unlocked: false },
+            { id: 'crow', name: 'Crow', emoji: '🦅', rarity: 'legendary', cost: 3800, unlocked: false },
+            { id: 'cordelius', name: 'Cordelius', emoji: '🍄', rarity: 'chromatic', cost: 4000, unlocked: false },
