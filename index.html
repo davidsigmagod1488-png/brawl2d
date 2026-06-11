@@ -3,205 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars 2D: Збір Кристалів</title>
+    <title>Brawl Stars 2D Fixed</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: #130f40;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            color: #fff;
-            overflow: hidden;
-            user-select: none;
+            margin: 0; padding: 0; background: #130f40;
+            font-family: sans-serif; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; min-height: 100vh;
+            color: #fff; user-select: none;
         }
-
-        h1 {
-            margin: 5px 0;
-            font-size: 2rem;
-            color: #f1c40f;
-            text-shadow: 3px 3px 0px #000;
-        }
-
-        #ui {
-            display: flex;
-            gap: 25px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 30px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            border: 2px solid #3498db;
-        }
-
-        /* Арена Brawl Stars */
+        h1 { color: #f1c40f; margin: 10px 0; text-shadow: 2px 2px #000; }
+        #score-board { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
         #arena {
-            position: relative;
-            width: 700px;
-            height: 450px;
-            background: #27ae60; /* Зелена трава Бравла */
-            border: 10px solid #2c3e50;
-            border-radius: 15px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
-            overflow: hidden;
+            position: relative; width: 600px; height: 400px;
+            background: #27ae60; border: 8px solid #2c3e50; border-radius: 10px;
         }
-
-        /* Кущі та перешкоди */
-        .bush {
-            position: absolute;
-            background: #1e824c;
-            border-radius: 8px;
-            opacity: 0.9;
+        .bush { position: absolute; background: #1e824c; border-radius: 5px; }
+        .char {
+            position: absolute; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 24px;
         }
-
-        /* Персонажі */
-        .brawler {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            transition: transform 0.1s ease;
-        }
-
-        #shelly {
-            background: #9b59b6; /* Фіолетовий колір Шеллі */
-            border: 3px solid #fff;
-            z-index: 10;
-        }
-
-        #elprimo {
-            background: #e74c3c; /* Червоний колір ворога */
-            border: 3px solid #f1c40f;
-            z-index: 5;
-        }
-
-        /* Кристал */
+        #shelly { background: #9b59b6; border: 2px solid #fff; z-index: 10; }
+        #elprimo { background: #e74c3c; border: 2px solid #f1c40f; z-index: 5; }
         #gem {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background: #00d2d3;
-            border-radius: 5px;
-            transform: rotate(45deg);
-            box-shadow: 0 0 15px #00d2d3;
-            animation: pulse 1s infinite alternate;
+            position: absolute; width: 20px; height: 20px;
+            background: #00d2d3; transform: rotate(45deg); box-shadow: 0 0 10px #00d2d3;
         }
-
-        @keyframes pulse {
-            from { transform: rotate(45deg) scale(0.9); }
-            to { transform: rotate(45deg) scale(1.1); box-shadow: 0 0 25px #00e8e8; }
-        }
-
-        /* Екран програшу */
         #game-over {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: none; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            flex-direction: column; align-items: center; justify-content: center; z-index: 100;
         }
-
         .btn {
-            background: #f1c40f;
-            color: #000;
-            border: none;
-            padding: 12px 35px;
-            font-size: 1.3rem;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
-            transition: 0.2s;
+            background: #f1c40f; color: #000; border: none;
+            padding: 10px 20px; font-size: 18px; font-weight: bold;
+            border-radius: 20px; cursor: pointer; margin-top: 15px;
         }
-        .btn:hover { transform: scale(1.05); background: #f39c12; }
-
-        /* Мобільний джойстик/кнопки */
-        #controls {
-            display: grid;
-            grid-template-columns: repeat(3, 60px);
-            grid-gap: 8px;
-            margin-top: 15px;
-        }
-        .ctrl-btn {
-            width: 60px; height: 60px;
-            background: #2c3e50; border: 2px solid #34495e;
-            color: white; font-size: 1.6rem;
-            border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ctrl-btn:active { background: #34495e; }
     </style>
 </head>
 <body>
 
     <h1>BRAWL STARS 2D 🌟</h1>
-    
-    <div id="ui">
-        <div>💎 Кристали: <span id="gems-count">0</span></div>
-        <div>Бравлер: <span style="color:#9b59b6;">Shelly 🤠</span></div>
-    </div>
+    <div id="score-board">💎 Кристали: <span id="gems-count">0</span></div>
 
     <div id="arena">
-        <!-- Кущі для краси Бравла -->
-        <div class="bush" style="width: 120px; height: 60px; top: 40px; left: 80px;"></div>
-        <div class="bush" style="width: 100px; height: 80px; bottom: 60px; right: 90px;"></div>
-        <div class="bush" style="width: 80px; height: 50px; top: 200px; left: 310px; background: #2ecc71;"></div>
+        <!-- Кущі -->
+        <div class="bush" style="width: 100px; height: 50px; top: 50px; left: 50px;"></div>
+        <div class="bush" style="width: 100px; height: 50px; bottom: 50px; right: 50px;"></div>
 
-        <!-- Гравці та предмети -->
-        <div id="shelly" class="brawler">🤠</div>
-        <div id="elprimo" class="brawler">🤼‍♂️</div>
+        <!-- Об'єкти -->
+        <div id="shelly" class="char">🤠</div>
+        <div id="elprimo" class="char">🤼‍♂️</div>
         <div id="gem"></div>
 
-        <!-- Вікно кінця гри -->
+        <!-- Меню програшу -->
         <div id="game-over">
-            <h2 style="color: #e74c3c; font-size: 2.5rem; margin: 0;">ТАКАУТ! 💀</h2>
-            <p style="font-size: 1.2rem;">Ель Прімо здолав тебе!</p>
-            <button class="btn" onclick="restartBrawl()">Знову в бій ⚔️</button>
+            <h2 style="color: #e74c3c; margin: 0;">НОКАУТ! 💀</h2>
+            <button class="btn" onclick="restartGame()">У бій! ⚔️</button>
         </div>
     </div>
 
-    <!-- Керування для сенсорних екранів або тестів -->
-    <div id="controls">
-        <div></div><button class="ctrl-btn" id="btn-up">▲</button><div></div>
-        <button class="ctrl-btn" id="btn-left">◀</button><div></div><button class="ctrl-btn" id="btn-right">▶</button>
-        <div></div><button class="ctrl-btn" id="btn-down">▼</button><div></div>
-    </div>
+    <p style="color: #aaa; font-size: 14px;">Керування: Стрілочки або клавіші W, A, S, D (англійська розкладка)</p>
 
     <script>
         const shelly = document.getElementById('shelly');
         const elprimo = document.getElementById('elprimo');
         const gem = document.getElementById('gem');
-        const gameOverScreen = document.getElementById('game-over');
-        const gemsCountText = document.getElementById('gems-count');
+        const gameOver = document.getElementById('game-over');
+        const scoreText = document.getElementById('gems-count');
 
-        // Початкові позиції
-        let sX = 50, sY = 200;       // Шеллі
-        let eX = 550, eY = 200;     // Ель Прімо
-        let gX = 330, gY = 210;     // Кристал
-
-        let gemsCollected = 0;
+        let sX = 100, sY = 180;
+        let eX = 450, eY = 180;
+        let gX = 280, gY = 180;
+        let score = 0;
         let isDead = false;
-        const brawlerSpeed = 7;     // Твоя швидкість руху
 
-        // Об'єкт для відслідковування затиснутих клавіш
-        const activeKeys = {};
+        const keys = {};
 
-        function initPositions() {
+        function updatePositions() {
             shelly.style.left = sX + 'px';
             shelly.style.top = sY + 'px';
             elprimo.style.left = eX + 'px';
@@ -210,78 +89,63 @@
             gem.style.top = gY + 'px';
         }
 
-        // НАДІЙНЕ КЕРУВАННЯ: Слухаємо весь документ
-        window.addEventListener('keydown', (e) => {
-            activeKeys[e.key.toLowerCase()] = true;
-        });
+        // Прив'язуємо керування до вікна
+        window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 
-        window.addEventListener('keyup', (e) => {
-            activeKeys[e.key.toLowerCase()] = false;
-        });
-
-        // Функція постійного оновлення рухів (Game Loop)
-        function gameLoop() {
+        function loop() {
             if (isDead) return;
 
-            // Рух через WASD або Стрілочки
-            if (activeKeys['w'] || activeKeys['arrowup']) sY -= brawlerSpeed;
-            if (activeKeys['s'] || activeKeys['arrowdown']) sY += brawlerSpeed;
-            if (activeKeys['a'] || activeKeys['arrowleft']) { sX -= brawlerSpeed; shelly.style.transform = 'scaleX(1)'; }
-            if (activeKeys['d'] || activeKeys['arrowright']) { sX += brawlerSpeed; shelly.style.transform = 'scaleX(-1)'; }
+            // Рух Шеллі
+            if (keys['w'] || keys['arrowup']) sY -= 5;
+            if (keys['s'] || keys['arrowdown']) sY += 5;
+            if (keys['a'] || keys['arrowleft']) sX -= 5;
+            if (keys['d'] || keys['arrowright']) sX += 5;
 
-            // Обмеження, щоб Шеллі не вилітала за рамки карти
-            sX = Math.max(10, Math.min(645, sX));
-            sY = Math.max(10, Math.min(395, sY));
+            // Межі карти
+            sX = Math.max(0, Math.min(560, sX));
+            sY = Math.max(0, Math.min(360, sY));
 
-            shelly.style.left = sX + 'px';
-            shelly.style.top = sY + 'px';
-
-            // Рух ШІ Ель Прімо (переслідує Шеллі)
+            // Рух Ель Прімо за Шеллі
             let dx = sX - eX;
             let dy = sY - eY;
             let dist = Math.hypot(dx, dy);
-
             if (dist > 5) {
-                eX += (dx / dist) * 2.5; // Швидкість Ель Прімо
-                eY += (dy / dist) * 2.5;
+                eX += (dx / dist) * 2;
+                eY += (dy / dist) * 2;
             }
 
-            elprimo.style.left = eX + 'px';
-            elprimo.style.top = eY + 'px';
-
-            // Перевірка зіткнень
-            checkBrawlCollisions();
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        function checkBrawlCollisions() {
-            // 1. Збір кристалу
-            if (Math.hypot(sX - gX, sY - gY) < 35) {
-                gemsCollected++;
-                gemsCountText.innerText = gemsCollected;
-                // Нове місце для кристалу
-                gX = Math.random() * 600 + 30;
-                gY = Math.random() * 380 + 30;
-                gem.style.left = gX + 'px';
-                gem.style.top = gY + 'px';
+            // Перевірка на кристал
+            if (Math.hypot(sX - gX, sY - gY) < 30) {
+                score++;
+                scoreText.innerText = score;
+                gX = Math.random() * 500 + 30;
+                gY = Math.random() * 300 + 30;
             }
 
-            // 2. Зіткнення з Ель Прімо (Програш)
-            if (Math.hypot(sX - eX, sY - eY) < 38) {
+            // Зіткнення з ворогом
+            if (Math.hypot(sX - eX, sY - eY) < 30) {
                 isDead = true;
-                gameOverScreen.style.display = 'flex';
+                gameOver.style.display = 'flex';
             }
+
+            updatePositions();
+            requestAnimationFrame(loop);
         }
 
-        // Керування кнопками на екрані (для мобільних)
-        document.getElementById('btn-up').addEventListener('mousedown', () => activeKeys['w'] = true);
-        document.getElementById('btn-up').addEventListener('mouseup', () => activeKeys['w'] = false);
-        document.getElementById('btn-down').addEventListener('mousedown', () => activeKeys['s'] = true);
-        document.getElementById('btn-down').addEventListener('mouseup', () => activeKeys['s'] = false);
-        document.getElementById('btn-left').addEventListener('mousedown', () => activeKeys['a'] = true);
-        document.getElementById('btn-left').addEventListener('mouseup', () => activeKeys['a'] = false);
-        document.getElementById('btn-right').addEventListener('mousedown', () => activeKeys['d'] = true);
-        document.getElementById('btn-right').addEventListener('mouseup', () => activeKeys['d'] = false);
+        function restartGame() {
+            sX = 100; sY = 180;
+            eX = 450; eY = 180;
+            score = 0;
+            scoreText.innerText = score;
+            isDead = false;
+            gameOver.style.display = 'none';
+            updatePositions();
+            loop();
+        }
 
-        // Для тач-екранів мобільних
+        updatePositions();
+        loop();
+    </script>
+</body>
+</html>
